@@ -35,4 +35,31 @@ The dashboard covers 20 fictional servers across Meridian North and Meridian Sou
 
 The local Worker provides `GET /api/datacenters`, `GET /api/servers?datacenterId=...`, `GET /api/servers/:id`, `GET /api/racks?datacenterId=...`, and `GET /api/alerts?datacenterId=...`.
 
-The local D1 database is named `capacity-db`; Wrangler stores its emulator state under `.wrangler/` (not committed). Rerunning `npm run db:setup` reapplies the seed deterministically.
+The local D1 database is named `datacenter-analytics-db`; Wrangler stores its emulator state under `.wrangler/` (not committed). Rerunning `npm run db:setup` applies the seed deterministically.
+
+## Deploy to Cloudflare
+
+The Worker is `datacenter-analytics-lab` and uses the existing D1 database `datacenter-analytics-db` through the `DB` binding. The Worker URL is <https://datacenter-analytics-lab.zheng-gong.workers.dev>.
+
+Before deployment, authenticate Wrangler with the Cloudflare account that owns these resources:
+
+```sh
+npx wrangler login
+```
+
+Run the following from the project root. The migration and seed commands are separate so you can review and run them independently. Remote database commands modify the existing D1 database; do not run them for a dry run or local preview.
+
+```sh
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm run deploy:dry-run
+npm run db:migrate:remote
+npm run db:seed:remote
+npm run deploy
+```
+
+`db:migrate:remote` applies unapplied SQL files from `db/migrations` to the remote D1 database. `db:seed:remote` executes `db/seed.sql`. The seed uses upserts for its known synthetic IDs: it updates/replaces the matching synthetic rows and is repeatable, but it does **not** delete rows that are not named in the seed. Deployment publishes the built Worker and `dist/` assets.
+
+Cloudflare Access protection is managed in the Cloudflare dashboard, not in this Wrangler configuration. Keep the existing Access policy protecting all traffic to the Worker URL; verify that policy remains enabled after deployment. This project adds no public endpoints or Access bypasses.
