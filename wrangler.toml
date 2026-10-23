@@ -15,4 +15,10 @@ database_id = "88a4e5c8-090a-4b58-8128-72f447a4a775"
 migrations_dir = "db/migrations"
 
 [observability]
-enabled = false
+enabled = true
+redact_query_string = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+persist = true
