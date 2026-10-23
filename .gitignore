@@ -142,6 +142,9 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+# Cloudflare local development state
+.wrangler/
+
 # Astro generated types
 .astro/
 

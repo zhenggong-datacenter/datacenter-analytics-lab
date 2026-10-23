@@ -1,0 +1,17 @@
+name = "datacenter-capacity-dashboard"
+main = "src/worker/index.ts"
+compatibility_date = "2026-10-23"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "capacity-db"
+database_id = "00000000-0000-4000-8000-000000000001"
+migrations_dir = "db/migrations"
+
+[observability]
+enabled = false
