@@ -1,6 +1,7 @@
-name = "datacenter-capacity-dashboard"
+name = "datacenter-analytics-lab"
 main = "src/worker/index.ts"
 compatibility_date = "2026-10-23"
+preview_urls = false
 
 [assets]
 directory = "./dist"
@@ -9,8 +10,8 @@ run_worker_first = ["/api/*"]
 
 [[d1_databases]]
 binding = "DB"
-database_name = "capacity-db"
-database_id = "00000000-0000-4000-8000-000000000001"
+database_name = "datacenter-analytics-db"
+database_id = "88a4e5c8-090a-4b58-8128-72f447a4a775"
 migrations_dir = "db/migrations"
 
 [observability]

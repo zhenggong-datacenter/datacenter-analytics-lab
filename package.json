@@ -8,8 +8,12 @@
   },
   "scripts": {
     "dev": "npm run build && wrangler dev --local --ip 0.0.0.0 --port 8787",
-    "db:setup": "wrangler d1 migrations apply capacity-db --local && wrangler d1 execute capacity-db --local --file=db/seed.sql",
+    "db:setup": "wrangler d1 migrations apply datacenter-analytics-db --local && wrangler d1 execute datacenter-analytics-db --local --file=db/seed.sql",
+    "db:migrate:remote": "wrangler d1 migrations apply datacenter-analytics-db --remote",
+    "db:seed:remote": "wrangler d1 execute datacenter-analytics-db --remote --file=db/seed.sql",
     "build": "tsc --noEmit && vite build",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:dry-run": "npm run build && wrangler deploy --dry-run",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "preview": "npm run build && wrangler dev --local --ip 0.0.0.0 --port 8787"
