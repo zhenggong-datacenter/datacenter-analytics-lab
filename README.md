@@ -33,7 +33,17 @@ npm run build
 
 The dashboard covers 20 fictional servers across Meridian North and Meridian South, with overview, server details, rack power, data-center filtering, and latest-reading alerts. All values are simulated. Missing metric and rack readings remain unavailable rather than being interpreted as zero. Thresholds are demonstration values from [docs/requirements.md](docs/requirements.md).
 
-The local Worker provides `GET /api/datacenters`, `GET /api/servers?datacenterId=...`, `GET /api/servers/:id`, `GET /api/racks?datacenterId=...`, and `GET /api/alerts?datacenterId=...`.
+The local Worker provides `GET /api/datacenters`, `GET /api/servers?datacenterId=...`, `GET /api/servers/:id`, `GET /api/racks?datacenterId=...`, `GET /api/alerts?datacenterId=...`, and `GET /api/health`. The health endpoint runs a read-only `SELECT 1` against D1, returning `200 {"status":"ok"}` when healthy and `503 {"status":"unavailable"}` when D1 cannot be reached. It does not reveal internal error details and remains behind the existing Cloudflare Access protection.
+
+### Inspect Worker logs
+
+Worker logs are persisted with query-string redaction enabled. In the Cloudflare dashboard, open **Workers & Pages**, select **datacenter-analytics-lab**, then open **Logs** (or **Observability → Logs**) to inspect invocation logs and structured application errors. To stream logs from an authenticated local terminal, run:
+
+```sh
+npx wrangler tail datacenter-analytics-lab
+```
+
+Application error events are JSON records containing an event name, HTTP method, and API route category; exception messages and request URLs are intentionally omitted.
 
 The local D1 database is named `datacenter-analytics-db`; Wrangler stores its emulator state under `.wrangler/` (not committed). Rerunning `npm run db:setup` applies the seed deterministically.
 

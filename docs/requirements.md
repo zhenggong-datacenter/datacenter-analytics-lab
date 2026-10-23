@@ -32,11 +32,17 @@ These are demonstration thresholds, not production standards.
 - Alerts match the documented rules.
 - Missing readings appear as unavailable, not zero.
 - The interface clearly labels all data as simulated.
+- `GET /api/health` performs a read-only D1 connectivity check and returns
+  HTTP 200 when healthy or 503 when the database check fails.
+- Health responses and server-side error logs do not expose credentials,
+  tokens, or internal error details.
+- The health endpoint remains protected by the existing Cloudflare Access
+  policy.
 
 ## Later phases
 - Historical trends and capacity forecasting.
 - An AI assistant that explains alerts using available evidence.
-- Automated tests, CI/CD, deployment, and monitoring.
+- CI/CD, deployment, and expanded monitoring.
 
 ## Constraints
 - Start within free service allowances.

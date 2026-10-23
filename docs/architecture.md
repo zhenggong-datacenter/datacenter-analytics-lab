@@ -34,12 +34,22 @@ All timestamps use UTC.
 - GET /api/servers/:id
 - GET /api/racks?datacenterId=...
 - GET /api/alerts?datacenterId=...
+- GET /api/health — read-only D1 connectivity check; returns 200 when healthy
+  and 503 when unavailable.
 
 ## Alert evaluation
 - Apply the thresholds in docs/requirements.md.
 - Evaluate the latest available readings.
 - Include resource, metric, value, unit, threshold, and timestamp.
 - Do not generate a threshold alert from a missing reading.
+
+## Operational monitoring
+- `/api/health` runs a lightweight `SELECT 1` query and returns no database
+  identifiers, credentials, or internal error details.
+- The endpoint uses the Worker’s existing API routing and remains subject to
+  the existing Cloudflare Access policy.
+- Worker API failures emit structured server-side log events without exception
+  messages, request URLs, credentials, or tokens.
 
 ## Development approach
 - Develop and test inside Codespaces.

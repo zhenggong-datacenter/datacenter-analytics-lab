@@ -61,11 +61,26 @@ const json = (body: unknown, status = 200) => Response.json(body, {
   status, headers: { 'Cache-Control': 'no-store' },
 });
 
+function logApiError(event: string, method: string): void {
+  console.error(JSON.stringify({ event, method, route: 'api' }));
+}
+
 async function api(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405);
   const url = new URL(request.url);
   const center = url.searchParams.get('datacenterId') || undefined;
   const path = url.pathname;
+
+  if (path === '/api/health') {
+    try {
+      const result = await env.DB.prepare('SELECT 1 AS ok').first<{ ok: number }>();
+      if (result?.ok !== 1) throw new Error('Health query returned no result');
+      return json({ status: 'ok' });
+    } catch {
+      logApiError('worker_health_check_failed', request.method);
+      return json({ status: 'unavailable' }, 503);
+    }
+  }
 
   if (path === '/api/datacenters') {
     const result = await env.DB.prepare('SELECT id, name FROM data_centers ORDER BY name').all<DataCenter>();
@@ -114,8 +129,8 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (!new URL(request.url).pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
     try { return await api(request, env); }
-    catch (error) {
-      console.error('API request failed', error);
+    catch {
+      logApiError('worker_api_request_failed', request.method);
       return json({ error: 'Unable to load dashboard data' }, 500);
     }
   },
